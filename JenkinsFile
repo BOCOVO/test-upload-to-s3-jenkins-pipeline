@@ -1,0 +1,29 @@
+pipeline {
+  agent {
+    docker {
+      image 'node:lts-buster-slim'
+    }
+  }
+  stages {
+    stage('Build') {
+      steps {
+        sh 'npm -v'
+        sh 'npm -v'
+        sh 'npm install'
+        sh 'npm run build'
+      }
+    }
+    stage('Deploy') {
+      steps {
+        withAWS(credentials: 'aws-credentials') {
+          s3Upload(pathStyleAccessEnabled: true, file: 'out/**', bucket: 'next-jenkins', workingDir: 'out')
+        }
+      }
+    }
+  }
+  post {
+    always {
+      deleteDir()
+    }
+  }
+}
