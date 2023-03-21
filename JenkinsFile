@@ -1,29 +1,21 @@
-pipeline {
-  agent {
-    docker {
-        image 'node:16-alpine'
-        args '-u root:node'
-        reuseNode true
-    }
-  }
-  stages {
+node {
+  docker.image('node:16-alpine').withRun('-u root:node') {
+    
     stage('Build') {
-      steps {
-        sh 'yarn install'
-        sh 'yarn export'
-      }
+      sh 'yarn install'
+      sh 'yarn export'
     }
+
     stage('Deploy') {
-      steps {
-        withAWS(credentials: 'aws-credentials',region:'us-east-2') {
-          s3Upload(pathStyleAccessEnabled: true, file: 'out', bucket: 'next-jenkins')
-        }
+      withAWS(credentials: 'aws-credentials', region: 'us-east-2') {
+        s3Upload(pathStyleAccessEnabled: true, file: 'out', bucket: 'next-jenkins')
       }
     }
-  }
-  post {
-    always {
-      deleteDir()
+
+    post {
+      always {
+        deleteDir()
+      }
     }
   }
 }
