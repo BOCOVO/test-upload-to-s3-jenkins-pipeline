@@ -1,5 +1,5 @@
 node {
-  docker.image('node:16-alpine').withRun('-u root:node') {
+  docker.image('node:16-alpine').withRun('-u root:node -w /var/lib/jenkins/workspace/node -v /var/lib/jenkins/workspace/node:/var/lib/jenkins/workspace/node:rw -v /var/lib/jenkins/workspace/node@tmp:/var/lib/jenkins/workspace/node@tmp:rw') {
     
     stage('Build') {
       sh 'npm install'
