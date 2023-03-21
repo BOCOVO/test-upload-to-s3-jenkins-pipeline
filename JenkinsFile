@@ -10,14 +10,13 @@ pipeline {
     stage('Build') {
       steps {
         sh 'yarn install'
-        sh 'yarn build'
         sh 'yarn export'
       }
     }
     stage('Deploy') {
       steps {
         withAWS(credentials: 'aws-credentials') {
-          s3Upload(pathStyleAccessEnabled: true, file: 'out/**', bucket: 'next-jenkins', workingDir: 'out')
+          s3Upload(pathStyleAccessEnabled: true, file: 'out', bucket: 'next-jenkins')
         }
       }
     }
