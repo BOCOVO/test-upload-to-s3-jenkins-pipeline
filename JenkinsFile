@@ -2,8 +2,8 @@ node {
   docker.image('node:16-alpine').withRun('-u root:node') {
     
     stage('Build') {
-      sh 'yarn install'
-      sh 'yarn export'
+      sh 'npm install'
+      sh 'npm run export'
     }
 
     stage('Deploy') {
