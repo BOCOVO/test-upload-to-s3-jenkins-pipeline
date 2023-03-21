@@ -9,10 +9,9 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        sh 'npm install --unsafe-perm -g sharp'
-        sh 'ls'
-        sh 'npm run build'
-        sh 'npm run export'
+        sh 'yarn install'
+        sh 'yarn build'
+        sh 'yarn export'
       }
     }
     stage('Deploy') {
