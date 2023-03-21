@@ -1,21 +1,34 @@
-node {
-  docker.image('node:16-alpine').withRun('-u root:node -w /var/lib/jenkins/workspace/node -v /var/lib/jenkins/workspace/node:/var/lib/jenkins/workspace/node:rw -v /var/lib/jenkins/workspace/node@tmp:/var/lib/jenkins/workspace/node@tmp:rw') {
-    
+pipeline {
+  agent {
+    docker {
+        image 'node:16-alpine'
+        args '-u root:node'
+        reuseNode true
+    }
+  }
+  stages {
     stage('Build') {
-      sh 'npm install'
-      sh 'npm run export'
+      steps {
+        sh 'yarn install'
+        sh 'yarn export'
+      }
     }
-
     stage('Deploy') {
-      withAWS(credentials: 'aws-credentials', region: 'us-east-2') {
-        s3Upload(pathStyleAccessEnabled: true, file: 'out', bucket: 'next-jenkins')
+      steps {
+        withAWS(credentials: 'aws-credentials',region:'us-east-2') {
+          s3Upload(pathStyleAccessEnabled: true, file: 'out', bucket: 'next-jenkins')
+        }
       }
     }
-
-    post {
-      always {
-        deleteDir()
+    stage('Clean') {
+      steps {
+        sh 'rm -r *'
       }
+    }
+  }
+  post {
+    always {
+      deleteDir()
     }
   }
 }
